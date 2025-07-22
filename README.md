@@ -88,7 +88,27 @@ L'objectif de ce projet est donc de mettre en place des systèmes de recommandat
 
 ## 3. Algorithmes de recommandations utilisés
 
-### 3.1. ALS
+### 3.1. ALS (Alternating Least Squares)
+
+
+L'algorithme **ALS (Alternating Least Squares)** est une méthode de **factorisation de matrices** utilisée en filtrage collaboratif pour les systèmes de recommandation. Chaque utilisateur et chaque film sont représentés par un vecteur latent (interaction), appris automatiquement à partir des notes observées. L’objectif d’ALS est de remplir la matrice sparse des notes en approximant les préférences manquantes, via une alternance de résolutions de moindres carrés sur les facteurs utilisateurs/films.
+
+L'ALS est **particulièrement adapté aux grandes bases de données** : il est scalable, robuste au manque de données, et implémenté dans Apache Spark MLlib pour les usages big data.
+
+#### Split par proportion stratifiée
+
+Pour préparer l'entraînement et l'évaluation, le dataset a été divisé en **train** et **test** selon une **proportion stratifiée**.
+- Lors du split, chaque utilisateur garde la même proportion de notations (interactions) dans le train et dans le test.
+- L’échantillonnage stratifié permet de garantir une répartition équitable des utilisateurs et une représentativité cohérente du comportement utilisateur entre train et test, et surtout permet d'éviter les cols start.
+
+#### Optimisation: Grid Search
+
+Les hyperparamètres du modèle ALS sont : le rang des facteurs latents (*rank*), le coefficient de régularisation (*regParam*), et le nombre d’itérations (*maxIter*); ces paramètres ont été optimisés via un **grid search**.*, afin:
+
+- d'entraîner le modèle pour toutes les combinaisons de valeurs prédéfinies sur ces paramètres.
+- d'évaluer chaque modèle (par exemple avec la RMSE sur le test), et de retenir la combinaison qui donne les meilleures performances générales (ici rank = 20, regParam = 0.1 et maxIter = 10).
+
+L'ALS apprend les préférences utilisateurs et les caractéristiques des films avec une approche scalable adaptée aux grands jeux de données. L’usage du split stratifié assure une évaluation robuste et représentative, et le grid search permet d’optimiser les performances du modèle en ajustant de façon systématique ses hyperparamètres sur les données de validation.
 
 
 ### 3.2. Recommandation basée sur le contenu
